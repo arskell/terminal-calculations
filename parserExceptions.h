@@ -21,10 +21,15 @@ namespace calc_prs{
 	public:
 		fmt_error(std::string msg, size_t marker);
 		virtual std::string get_msg();
+		size_t get_marker_position();
 	private:
 		size_t _mrk;
 	};
 	
-	
+	class too_big_number_exception: public p_excep{
+	public:
+		too_big_number_exception();
+		virtual std::string get_msg();
+	};
 }
 #endif
