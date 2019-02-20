@@ -2,7 +2,6 @@
 #include<string>
 #include"parser.h"
 
-
 int main(int argc, char** argv){
 	calc_prs::parser prs;
 	/*
@@ -10,13 +9,6 @@ int main(int argc, char** argv){
 	prs.process_buf();
 	std::cout<<prs.get_result()<<std::endl;
 	*/
-	std::string inp;
-	try{
-		throw calc_prs::fmt_error("test message", 228);
-	}catch(calc_prs::p_excep &x){
-		std::cout<<x.get_msg()<<std::endl;
-		return -1;
-	}
 	while(true){
 		std::cout<<"<<< ";
 		std::getline(std::cin, inp);

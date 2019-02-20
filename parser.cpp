@@ -49,7 +49,7 @@ void calc_prs::parser::prc(std::string &data){
 		#endif
 	}
 }
-//test: 10*3/2+3-1*5
+
 std::pair<size_t, std::pair<size_t,size_t>> calc_prs::parser::find_most_priority_exp(std::string &data){
 	std::pair<size_t, size_t> pr;
 	size_t b, a, res;
