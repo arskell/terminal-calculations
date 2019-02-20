@@ -4,11 +4,13 @@
 
 int main(int argc, char** argv){
 	calc_prs::parser prs;
-	/*
-	prs<<argv[(argc==1)?0:1];
-	prs.process_buf();
-	std::cout<<prs.get_result()<<std::endl;
-	*/
+	std::string inp;
+	if (argc > 1){
+		prs<<argv[1];
+		prs.process_buf();
+		std::cout<<prs.get_result()<<std::endl;
+		return 0;
+	}
 	while(true){
 		std::cout<<"<<< ";
 		std::getline(std::cin, inp);
