@@ -11,9 +11,12 @@ namespace calc_prs{
 	public:
 		p_excep(std::string msg, std::string mtype = "base parse exception");
 		virtual std::string get_msg();
+		virtual bool has_marker(){return false;}
+		size_t get_marker_position();
 	protected:
 		std::string _msg;
 		std::string _type;
+		size_t _mrk;
 	};
 	
 	
@@ -21,15 +24,14 @@ namespace calc_prs{
 	public:
 		fmt_error(std::string msg, size_t marker);
 		virtual std::string get_msg();
-		size_t get_marker_position();
-	private:
-		size_t _mrk;
+		virtual bool has_marker(){return true;}
 	};
 	
 	class too_big_number_exception: public p_excep{
 	public:
 		too_big_number_exception();
 		virtual std::string get_msg();
+		virtual bool has_marker(){return false;}
 	};
 }
 #endif

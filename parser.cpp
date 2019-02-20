@@ -16,7 +16,35 @@ void calc_prs::parser::erase_buf(){
 }
 
 void calc_prs::parser::process_buf(){
-	prc(buf);
+	auto count_open_p = std::count(buf.begin(), buf.end(), '(');
+	auto count_close_p = std::count(buf.begin(),buf.end(), ')');
+	if(count_close_p != count_open_p){
+		throw fmt_error("Parenthesis is missing", (count_close_p > count_open_p)?0:buf.length());
+	}
+	std::string b_data;
+	while(true){
+		auto p = find_most_priority_parentheses(buf);
+		if( (p.first == 0) && (p.second == buf.length())){
+			prc(buf);
+			return;
+		}
+		b_data = buf.substr(p.first + 1, p.second - p.first);
+		prc(b_data);
+		buf =  buf.substr(0, p.first) + b_data +  buf.substr(p.second + 1, buf.length() - p.second);
+	}
+}
+
+std::pair<size_t, size_t> calc_prs::parser::find_most_priority_parentheses(std::string &data){
+	size_t op, cl;
+	op = data.rfind('(');
+	cl = data.find(')', op);
+	if((op == std::string::npos) && (cl == std::string::npos)){
+		return {0, data.length()};
+	}
+	if( (op == std::string::npos) ^ (cl == std::string::npos)){
+		throw fmt_error("Parenthesis is missing", (cl==std::string::npos)?data.length():0);
+	}
+	return {op, cl};
 }
 
 void calc_prs::parser::prc(std::string &data){

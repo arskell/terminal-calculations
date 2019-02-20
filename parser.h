@@ -6,8 +6,8 @@
 
 #include <string>
 #include <utility>
-
-#include<iostream>
+#include <algorithm>
+#include <iostream>
 
 #include "parserExceptions.h"
 
@@ -28,8 +28,9 @@ namespace calc_prs{
 		std::string buf;
 		std::string workspace;
 		
-		void prc(std::string &data); //process data inside high prority quares parentheses
+		void prc(std::string &data); //process data inside high priority parentheses
 		std::pair<size_t, std::pair<size_t,size_t>> find_most_priority_exp(std::string &data);
+		std::pair<size_t, size_t> find_most_priority_parentheses(std::string &data);
 		numeric_fmt solve_expression(numeric_fmt f, numeric_fmt s, char oper);
 		size_t near_operators(std::string &data, size_t mpos, bool forward = true);
 		bool have_oper(std::string &data,const char* operator_list);

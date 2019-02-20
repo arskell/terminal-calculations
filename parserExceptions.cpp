@@ -1,8 +1,13 @@
 #include"parserExceptions.h"
 
 calc_prs::p_excep::p_excep(std::string msg, std::string mtype){
+	_mrk = std::string::npos;
 	_msg = msg;
 	_type = mtype;
+}
+
+size_t calc_prs::p_excep::get_marker_position(){
+	return _mrk;
 }
 
 std::string calc_prs::p_excep::get_msg(){
@@ -15,10 +20,9 @@ calc_prs::fmt_error::fmt_error(std::string msg, size_t marker):p_excep::p_excep(
 }
 
 std::string calc_prs::fmt_error::get_msg(){
-	return std::string("ERROR: "+ _msg + " at " + std::to_string(_mrk));
+	return std::string("ERROR: "+ _msg + " at " + "position number " + std::to_string(_mrk));
 }
 
-size_t calc_prs::fmt_error::get_marker_position(){return _mrk;}
 
 calc_prs::too_big_number_exception::too_big_number_exception():p_excep::p_excep("Out of buffer", "too_big_number_exception"){
 	
