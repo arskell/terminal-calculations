@@ -14,7 +14,7 @@
 #define OP_COUNT 4
 
 namespace calc_prs{
-	typedef float numeric_fmt;
+	typedef double numeric_fmt;
 	
 	class parser{
 	public:
