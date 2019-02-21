@@ -109,7 +109,7 @@ size_t calc_prs::parser::near_operators(std::string &data, size_t mpos, bool for
 	//throw p_excep("size_t calc_prs::parser::near_operators(std::string &data, size_t mpos, bool forward)");
 }
 
-calc_prs::numeric_fmt calc_prs::parser::solve_expression(calc_prs::numeric_fmt f, calc_prs::numeric_fmt s, char oper){
+calc_prs::numeric_fmt calc_prs::parser::solve_expression(calc_prs::numeric_fmt& f, calc_prs::numeric_fmt& s, char oper){
 	switch (oper){
 		case '*':
 		return f * s;
@@ -120,7 +120,7 @@ calc_prs::numeric_fmt calc_prs::parser::solve_expression(calc_prs::numeric_fmt f
 		case '-':
 		return f - s;
 	}
-	return -1;
+	throw p_excep("ERROR: undefined operator \'" + std::string((char*)&oper) + "\'");
 }
 
 bool calc_prs::parser::have_oper(std::string &data,const char* operator_list){

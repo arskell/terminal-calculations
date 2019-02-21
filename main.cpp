@@ -40,12 +40,15 @@ int main(int argc, char** argv){
 }
 
 void error_proc(calc_prs::p_excep &exc, calc_prs::parser &prs){
-	std::cout<< exc.get_msg() << ":" <<std::endl;
+	std::cout<< exc.get_msg();
 	if(exc.has_marker()){
+		std::cout<<":"<<std::endl;
 		std::cout<<prs.get_result()<<std::endl;
 		for(size_t i = 0; i < exc.get_marker_position(); i++){
 		std::cout<<" ";
 		}
 		std::cout<<"^" <<std::endl;
+	}else{
+		std::cout<<std::endl;
 	}
 }
