@@ -9,7 +9,12 @@ int main(int argc, char** argv){
 	calc_prs::parser prs;
 	if (argc > 1){
 		prs<<argv[1];
-		prs.process_buf();
+		try{
+			prs.process_buf();
+		}catch(calc_prs::p_excep &exc){
+			error_proc(exc, prs);
+			error = true;
+		}
 		if(!error) std::cout<<prs.get_result()<<std::endl;
 		return 0;
 	}
