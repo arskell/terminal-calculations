@@ -29,18 +29,25 @@ void calc_prs::parser::process_buf(){
 	}else{
 		b_data = buf;
 	}
-	
 	auto mvar = get_variables_borders(b_data);
 	if(mvar.size() != 0){
+		std::string name;
+		std::string tmp;
 		std::map<std::string, numeric_fmt>::iterator __nat;
 		for(auto i = mvar.begin(); i != mvar.end(); i++){
-			__nat = __namespace.find(b_data.substr((*i).first, (*i).second - (*i).first + 1)); //+1
+			name = b_data.substr((*i).first, (*i).second - (*i).first + 1);
+			__nat = __namespace.find(name); 
 			if( __nat == __namespace.end()){
 				throw p_excep("ERROR: no such variable \'" + b_data.substr((*i).first, (*i).second - (*i).first + 1) + "\'");
 			}
+			tmp =  std::to_string((*__nat).second);
 			b_data = b_data.substr(0, (*i).first) +
-					 std::to_string((*__nat).second) + 
+					 tmp + 
 					 ( ((*i).second==(b_data.length()))?(""):b_data.substr((*i).second + 1, b_data.length() - (*i).first));
+			for(auto j = i; j!= mvar.end(); j++){
+				j->first = j->first + (tmp.length() - name.length());
+				j->second = j->second +(tmp.length() - name.length());
+			}
 		}
 	}
 	std::string var_buf;
