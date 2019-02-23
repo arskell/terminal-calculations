@@ -220,6 +220,7 @@ inline bool calc_prs::parser::__s_check(const char ch){
 	if((ch >= int('0')) && (ch <= int('9'))) return true;
 	if((ch == '/') || (ch == '*') || (ch == '-') || (ch == '+')) return true;
 	if( ch == '=') return true;
+	if( ch == '.') return true;
 	if((ch == '(') || (ch == ')')) return true;
 	return is_name_char(ch);
 }
