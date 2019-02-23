@@ -35,7 +35,7 @@ namespace calc_prs{
 		size_t near_operators(std::string &data, size_t mpos, bool forward = true);
 		bool have_oper(std::string &data,const char* operator_list);
 		size_t test_add(size_t a, size_t b){return a+b;}
-		
+		bool is_oper(const char &c);
 		const char operators[2][2] = {{'*','/'}, {'+','-'}};
 		const char oper_list[4] = {'*','/','+','-'};
 	
