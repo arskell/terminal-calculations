@@ -8,7 +8,8 @@
 #include <utility>
 #include <algorithm>
 #include <iostream>
-
+#include <map>
+#include <list>
 #include "parserExceptions.h"
 
 #define OP_COUNT 4
@@ -27,6 +28,7 @@ namespace calc_prs{
 	private:
 		std::string buf;
 		std::string workspace;
+		std::map<std::string, numeric_fmt> __namespace;
 		
 		void __validation_checker(std::string &data);
 		inline bool __s_check(const char c);
@@ -37,9 +39,11 @@ namespace calc_prs{
 		numeric_fmt solve_expression(numeric_fmt &f, numeric_fmt &s, char oper);
 		size_t near_operators(std::string &data, size_t mpos, bool forward = true);
 		bool have_oper(std::string &data,const char* operator_list);
-		size_t test_add(size_t a, size_t b){return a+b;}
-		bool is_oper(const char &c);
-		
+		//size_t test_add(size_t a, size_t b){return a+b;}
+		std::list<std::pair<size_t, size_t>> get_variables_borders(std::string &data);
+		std::pair<size_t, size_t> get_var_borders(std::string &data, size_t pos = 0);
+		inline bool is_oper(const char c);
+		inline bool is_name_char(const char c);
 		const char operators[2][2] = {{'*','/'}, {'+','-'}};
 		const char oper_list[4] = {'*','/','+','-'};
 	

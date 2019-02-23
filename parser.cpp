@@ -18,17 +18,79 @@ void calc_prs::parser::erase_buf(){
 
 void calc_prs::parser::process_buf(){
 	__validation_checker(buf);
+	
 	std::string b_data;
-	while(true){
-		auto p = find_most_priority_parentheses(buf);
-		if( (p.first == 0) && ( (p.second == buf.length()) || (p.second == buf.length() - 1))){
-			prc(buf);
-			return;
-		}
-		b_data = buf.substr(p.first + 1, p.second - p.first - 1);
-		prc(b_data);
-		buf =  buf.substr(0, p.first) + b_data +  buf.substr(p.second + 1, buf.length() - p.second);
+	
+	auto expr = buf.find('=');
+	bool hcon = false;
+	if(expr != std::string::npos){
+		b_data = buf.substr(expr + 1, buf.length() - expr);
+		hcon = true;
+	}else{
+		b_data = buf;
 	}
+	
+	auto mvar = get_variables_borders(b_data);
+	if(mvar.size() != 0){
+		std::map<std::string, numeric_fmt>::iterator __nat;
+		for(auto i = mvar.begin(); i != mvar.end(); i++){
+			__nat = __namespace.find(b_data.substr((*i).first, (*i).second - (*i).first + 1)); //+1
+			if( __nat == __namespace.end()){
+				throw p_excep("ERROR: no such variable \'" + b_data.substr((*i).first, (*i).second - (*i).first + 1) + "\'");
+			}
+			b_data = b_data.substr(0, (*i).first) +
+					 std::to_string((*__nat).second) + 
+					 ( ((*i).second==(b_data.length()))?(""):b_data.substr((*i).second + 1, b_data.length() - (*i).first));
+		}
+	}
+	std::string var_buf;
+	while(true){
+		auto p = find_most_priority_parentheses( b_data);
+		if( (p.first == 0) && ( (p.second ==  b_data.length()) || (p.second ==  b_data.length() - 1))){
+			prc( b_data);
+			if(hcon){
+				break;
+			}else{
+				buf = b_data;
+				return;
+			}
+		}
+		var_buf =  b_data.substr(p.first + 1, p.second - p.first - 1);
+		prc(var_buf);
+		 b_data =   b_data.substr(0, p.first) + var_buf +   b_data.substr(p.second + 1,  b_data.length() - p.second);
+	}
+	__namespace[buf.substr(0, expr)] = atof(b_data.c_str());
+	buf.erase();
+}
+
+std::list<std::pair<size_t, size_t>> calc_prs::parser::get_variables_borders(std::string &data){
+	std::list<std::pair<size_t, size_t>> lst;
+	std::pair<size_t, size_t> b;
+	while(true){
+		b = get_var_borders(data, (lst.size()==0)?0:(lst.back().second + 1));
+		if(b.first == std::string::npos) return lst;
+		lst.insert(lst.end(), b);
+		if(b.second == data.length()) return lst;
+	}
+}
+
+std::pair<size_t, size_t> calc_prs::parser::get_var_borders(std::string& data, size_t pos){
+	for(size_t i = pos; i < data.length(); i++){
+		if(is_name_char(data[i])){
+			return {i, near_operators(data, i, true) - 1};
+		}
+	}
+	return {std::string::npos, std::string::npos};
+}
+
+inline bool calc_prs::parser::is_name_char(const char c){
+	for(int l = 'a'; l < (int)'z'; l++){
+		if(c == (char)l) return true;
+	}
+	for(int l = 'A'; l < (int)'Z'; l++){
+		if(c == (char)l) return true;
+	}
+	return false;
 }
 
 std::pair<size_t, size_t> calc_prs::parser::find_most_priority_parentheses(std::string &data){
@@ -100,7 +162,7 @@ std::pair<size_t, std::pair<size_t,size_t>> calc_prs::parser::find_most_priority
 	throw p_excep("std::pair<size_t, size_t> calc_prs::parser::find_most_priority_exp(std::string &data)");
 }
 
-bool calc_prs::parser::is_oper(const char& c){
+inline bool calc_prs::parser::is_oper(const char c){
 	for(size_t i(0); i < OP_COUNT; i++){
 		if(c == oper_list[i]) return true;
 	}
@@ -150,8 +212,9 @@ std::string calc_prs::parser::get_result(){
 inline bool calc_prs::parser::__s_check(const char ch){
 	if((ch >= int('0')) && (ch <= int('9'))) return true;
 	if((ch == '/') || (ch == '*') || (ch == '-') || (ch == '+')) return true;
+	if( ch == '=') return true;
 	if((ch == '(') || (ch == ')')) return true;
-	return false;
+	return is_name_char(ch);
 }
 
 void calc_prs::parser::__validation_checker(std::string &data){
