@@ -113,8 +113,7 @@ bool calc_prs::parser::is_oper(const char& c){
 }
 
 size_t calc_prs::parser::near_operators(std::string &data, size_t mpos, bool forward){
-	auto sz = data.length();
-	for(int i = mpos; i != (forward?data.length():0); i+=(forward?1:(-1))){
+	for(size_t i = mpos; i != (forward?data.length():0); i+=(forward?1:(-1))){
 		if(is_oper(data[i])) return i;
 	}
 	return forward?data.length():0;
@@ -135,8 +134,7 @@ calc_prs::numeric_fmt calc_prs::parser::solve_expression(calc_prs::numeric_fmt& 
 }
 
 bool calc_prs::parser::have_oper(std::string &data,const char* operator_list){
-	size_t opr, cl;
-	bool is_in = false;
+	size_t opr;
 	for(size_t t = 0; t < OP_COUNT; t++){
 		opr = data.rfind(operator_list[t]);
 		if (opr != std::string::npos){
