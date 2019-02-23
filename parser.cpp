@@ -17,12 +17,7 @@ void calc_prs::parser::erase_buf(){
 }
 
 void calc_prs::parser::process_buf(){
-	//TODO: valid checker
-	auto count_open_p = std::count(buf.begin(), buf.end(), '(');
-	auto count_close_p = std::count(buf.begin(),buf.end(), ')');
-	if(count_close_p != count_open_p){
-		throw fmt_error("Parenthesis is missing", (count_close_p > count_open_p)?0:buf.length());
-	}
+	__validation_checker(buf);
 	std::string b_data;
 	while(true){
 		auto p = find_most_priority_parentheses(buf);
@@ -130,7 +125,7 @@ calc_prs::numeric_fmt calc_prs::parser::solve_expression(calc_prs::numeric_fmt& 
 		case '-':
 		return f - s;
 	}
-	throw p_excep("ERROR: undefined operator \'" + std::string((char*)&oper) + "\'");
+	throw p_excep("ERROR: undefined operator \'" + std::string(&oper, 1) + "\'");
 }
 
 bool calc_prs::parser::have_oper(std::string &data,const char* operator_list){
@@ -151,4 +146,31 @@ bool calc_prs::parser::have_oper(std::string &data,const char* operator_list){
 std::string calc_prs::parser::get_result(){
 	return buf;
 }
+
+inline bool calc_prs::parser::__s_check(const char ch){
+	if((ch >= int('0')) && (ch <= int('9'))) return true;
+	if((ch == '/') || (ch == '*') || (ch == '-') || (ch == '+')) return true;
+	if((ch == '(') || (ch == ')')) return true;
+	return false;
+}
+
+void calc_prs::parser::__validation_checker(std::string &data){
+	auto count_open_p = std::count(data.begin(), data.end(), '(');
+	auto count_close_p = std::count(data.begin(),data.end(), ')');
+	if(count_close_p != count_open_p){
+		throw fmt_error("Parenthesis is missing", (count_close_p > count_open_p)?0:data.length());
+	}
+	char ch;
+	for(size_t i(0); i < data.length(); i++){
+		ch = data[i];
+		if( !__s_check(ch)) {
+			throw fmt_error("unknown symbol \'" + std::string(&ch, 1) + "\'", i);
+		}
+	}
+	
+}
+
+
+
+
 

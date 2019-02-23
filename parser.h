@@ -28,6 +28,9 @@ namespace calc_prs{
 		std::string buf;
 		std::string workspace;
 		
+		void __validation_checker(std::string &data);
+		inline bool __s_check(const char c);
+		
 		void prc(std::string &data); //process data inside high priority parentheses
 		std::pair<size_t, std::pair<size_t,size_t>> find_most_priority_exp(std::string &data);
 		std::pair<size_t, size_t> find_most_priority_parentheses(std::string &data);
@@ -36,6 +39,7 @@ namespace calc_prs{
 		bool have_oper(std::string &data,const char* operator_list);
 		size_t test_add(size_t a, size_t b){return a+b;}
 		bool is_oper(const char &c);
+		
 		const char operators[2][2] = {{'*','/'}, {'+','-'}};
 		const char oper_list[4] = {'*','/','+','-'};
 	
