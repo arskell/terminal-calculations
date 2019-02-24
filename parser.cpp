@@ -246,6 +246,15 @@ void calc_prs::parser::__validation_checker(std::string &data){
 			throw fmt_error("unknown symbol \'" + std::string(&ch, 1) + "\'", i);
 		}
 	}
+	switch(std::count(buf.begin(), buf.end(), '=')){
+	case 0:
+		break;
+	case 1:
+		if(!is_name_char(buf[0])) throw fmt_error("invalid expression", 0);
+		break;
+	default:
+		throw fmt_error("unexpected symbol \'=\'", buf.rfind('=')); 
+	}
 	
 }
 
