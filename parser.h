@@ -7,10 +7,13 @@
 #include <string>
 #include <utility>
 #include <algorithm>
-#include <iostream>
 #include <map>
 #include <list>
 #include "parserExceptions.h"
+
+#ifdef DEBUG
+#include <iostream>
+#endif
 
 #define OP_COUNT 4
 

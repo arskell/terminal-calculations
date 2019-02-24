@@ -21,6 +21,14 @@ void calc_prs::parser::process_buf(){
 	
 	std::string b_data;
 	
+	if(buf == "namespace"){
+		buf = "\n";
+		for(auto i = __namespace.begin(); i != __namespace.end(); i++){
+			buf += i->first + " == " + std::to_string(i->second) + "\n";
+		}
+		return;
+	}
+	
 	auto expr = buf.find('=');
 	bool hcon = false;
 	if(expr != std::string::npos){
