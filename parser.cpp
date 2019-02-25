@@ -17,8 +17,12 @@ void calc_prs::parser::erase_buf(){
 }
 
 void calc_prs::parser::process_buf(){
+	for(size_t i = 0; i < buf.length(); i++){
+		if(buf[i] == ' '){
+			buf = buf.substr(0, i) + buf.substr(i + 1, buf.length() - i);
+		}
+	}
 	__validation_checker(buf);
-	
 	std::string b_data;
 	
 	if(buf == "namespace"){
