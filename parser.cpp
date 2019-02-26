@@ -16,6 +16,44 @@ void calc_prs::parser::erase_buf(){
 	workspace.erase();
 }
 
+std::string calc_prs::parser::solve_input_data(std::string data){
+	std::string var_buf;
+	while(true){
+		auto p = find_most_priority_parentheses( data);
+		if( (p.first == 0) && ( (p.second ==  data.length()) || (p.second ==  data.length() - 1))){
+			prc(data);
+			return data;
+		}
+		var_buf =  data.substr(p.first + 1, p.second - p.first - 1);
+		prc(var_buf);
+		data =   data.substr(0, p.first) + var_buf +   data.substr(p.second + 1,  data.length() - p.second);
+	}
+}
+
+void calc_prs::parser::dereference_all_vars(std::string& data){
+	auto mvar = get_variables_borders(data);
+	if(mvar.size() != 0){
+		std::string name;
+		std::string tmp;
+		std::map<std::string, numeric_fmt>::iterator __nat;
+		for(auto i = mvar.begin(); i != mvar.end(); i++){
+			name = data.substr((*i).first, (*i).second - (*i).first + 1);
+			__nat = __namespace.find(name); 
+			if( __nat == __namespace.end()){
+				throw p_excep("ERROR: no such variable \'" + data.substr((*i).first, (*i).second - (*i).first + 1) + "\'");
+			}
+			tmp =  std::to_string((*__nat).second);
+			data = data.substr(0, (*i).first) +
+					 tmp + 
+					 ( ((*i).second==(data.length()))?(""):data.substr((*i).second + 1, data.length() - (*i).first));
+			for(auto j = i; j!= mvar.end(); j++){
+				j->first = j->first + (tmp.length() - name.length());
+				j->second = j->second + (tmp.length() - name.length());
+			}
+		}
+	}
+}
+
 void calc_prs::parser::process_buf(){
 	__prevalidation_valid_checker(buf);
 	for(size_t i = 0; i < buf.length(); i++){
@@ -24,9 +62,7 @@ void calc_prs::parser::process_buf(){
 		}
 	}
 	__validation_checker(buf);
-	std::string b_data;
-	
-	if(buf == "namespace"){
+	if(buf == "namespace"){ 	/* temporary code word to debugging 		*/
 		buf = "\n";
 		for(auto i = __namespace.begin(); i != __namespace.end(); i++){
 			buf += i->first + " == " + std::to_string(i->second) + "\n";
@@ -36,51 +72,23 @@ void calc_prs::parser::process_buf(){
 	
 	auto expr = buf.find('=');
 	bool hcon = false;
+	std::string varname;
 	if(expr != std::string::npos){
-		b_data = buf.substr(expr + 1, buf.length() - expr);
+		varname = buf.substr(0, expr);
+		buf = buf.substr(expr + 1, buf.length() - expr);
 		hcon = true;
-	}else{
-		b_data = buf;
 	}
-	auto mvar = get_variables_borders(b_data);
-	if(mvar.size() != 0){
-		std::string name;
-		std::string tmp;
-		std::map<std::string, numeric_fmt>::iterator __nat;
-		for(auto i = mvar.begin(); i != mvar.end(); i++){
-			name = b_data.substr((*i).first, (*i).second - (*i).first + 1);
-			__nat = __namespace.find(name); 
-			if( __nat == __namespace.end()){
-				throw p_excep("ERROR: no such variable \'" + b_data.substr((*i).first, (*i).second - (*i).first + 1) + "\'");
-			}
-			tmp =  std::to_string((*__nat).second);
-			b_data = b_data.substr(0, (*i).first) +
-					 tmp + 
-					 ( ((*i).second==(b_data.length()))?(""):b_data.substr((*i).second + 1, b_data.length() - (*i).first));
-			for(auto j = i; j!= mvar.end(); j++){
-				j->first = j->first + (tmp.length() - name.length());
-				j->second = j->second +(tmp.length() - name.length());
-			}
-		}
+	
+	dereference_all_vars(buf);
+	buf = solve_input_data(buf);
+	if(hcon){
+		__namespace[varname] = NUMERIC_FMT_TO_STRING_FUNTION(buf.c_str());
+		buf.erase();
 	}
-	std::string var_buf;
-	while(true){
-		auto p = find_most_priority_parentheses( b_data);
-		if( (p.first == 0) && ( (p.second ==  b_data.length()) || (p.second ==  b_data.length() - 1))){
-			prc( b_data);
-			if(hcon){
-				break;
-			}else{
-				buf = b_data;
-				return;
-			}
-		}
-		var_buf =  b_data.substr(p.first + 1, p.second - p.first - 1);
-		prc(var_buf);
-		 b_data =   b_data.substr(0, p.first) + var_buf +   b_data.substr(p.second + 1,  b_data.length() - p.second);
-	}
-	__namespace[buf.substr(0, expr)] = atof(b_data.c_str());
-	buf.erase();
+}
+
+calc_prs::koid calc_prs::parser::get_koid(std::string &data){
+	/// TO DO
 }
 
 std::list<std::pair<size_t, size_t>> calc_prs::parser::get_variables_borders(std::string &data){
@@ -143,14 +151,14 @@ void calc_prs::parser::prc(std::string &data){
 	std::string b_str, l_str, r_str;
 	while(have_oper(data, oper_list)){
 		auto exp = find_most_priority_exp(data);
-		a = atof(data.substr((exp.second.first==0)?exp.second.first:(exp.second.first + 1), exp.first - exp.second.first).c_str());
-		b = atof(data.substr(exp.first + 1,exp.second.second- exp.first).c_str());
+		a = NUMERIC_FMT_TO_STRING_FUNTION(data.substr((exp.second.first==0)?exp.second.first:(exp.second.first + 1), exp.first - exp.second.first).c_str());
+		b = NUMERIC_FMT_TO_STRING_FUNTION(data.substr(exp.first + 1,exp.second.second- exp.first).c_str());
 		#ifdef DEBUG
 		std::cout<<exp.first<< " <"<< exp.second.first <<"," << exp.second.second<<">"<<std::endl;
 		std::cout<<a<<std::endl;
 		std::cout<<b<<std::endl;
 		#endif
-		b_str = std::to_string(solve_expression(a, b, data[exp.first]));
+		b_str = std::to_string(solve_bi_expression(a, b, data[exp.first]));
 		if(exp.second.first != 0){
 			l_str = data.substr(0, exp.second.first+1);//&
 		}else{
@@ -208,7 +216,7 @@ size_t calc_prs::parser::near_operators(std::string &data, size_t mpos, bool for
 	return forward?data.length():0;
 }
 
-calc_prs::numeric_fmt calc_prs::parser::solve_expression(calc_prs::numeric_fmt& f, calc_prs::numeric_fmt& s, char oper){
+calc_prs::numeric_fmt calc_prs::parser::solve_bi_expression(calc_prs::numeric_fmt& f, calc_prs::numeric_fmt& s, char oper){
 	switch (oper){
 		case '*':
 		return f * s;

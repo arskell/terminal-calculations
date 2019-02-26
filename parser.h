@@ -16,9 +16,15 @@
 #endif
 
 #define OP_COUNT 4
+#define NUMERIC_FMT_TO_STRING_FUNTION(str) atof(str)
 
 namespace calc_prs{
 	typedef double numeric_fmt;
+	
+	enum koid{                      /*kind of input data       */
+			EXPRESSION,
+			FUNCTION
+		};
 	
 	class parser{
 	public:
@@ -37,11 +43,14 @@ namespace calc_prs{
 		void __prevalidation_valid_checker(std::string& data);
 		inline bool __s_check(const char c);
 		
+		koid get_koid(std::string &data);
 		
+		std::string solve_input_data(std::string data);
+		void dereference_all_vars(std::string &data);
 		void prc(std::string &data); //process data inside high priority parentheses
 		std::pair<size_t, std::pair<size_t,size_t>> find_most_priority_exp(std::string &data);
 		std::pair<size_t, size_t> find_most_priority_parentheses(std::string &data);
-		numeric_fmt solve_expression(numeric_fmt &f, numeric_fmt &s, char oper);
+		numeric_fmt solve_bi_expression(numeric_fmt &f, numeric_fmt &s, char oper);
 		size_t near_operators(std::string &data, size_t mpos, bool forward = true);
 		bool have_oper(std::string &data,const char* operator_list);
 		std::list<std::pair<size_t, size_t>> get_variables_borders(std::string &data);
@@ -52,7 +61,7 @@ namespace calc_prs{
 		const char oper_list[4] = {'*','/','+','-'};
 	
 	};
-
+	
 }
 
 
