@@ -17,6 +17,7 @@ void calc_prs::parser::erase_buf(){
 }
 
 void calc_prs::parser::process_buf(){
+	__prevalidation_valid_checker(buf);
 	for(size_t i = 0; i < buf.length(); i++){
 		if(buf[i] == ' '){
 			buf = buf.substr(0, i) + buf.substr(i + 1, buf.length() - i);
@@ -90,6 +91,18 @@ std::list<std::pair<size_t, size_t>> calc_prs::parser::get_variables_borders(std
 		if(b.first == std::string::npos) return lst;
 		lst.insert(lst.end(), b);
 		if(b.second == data.length()) return lst;
+	}
+}
+
+void calc_prs::parser::__prevalidation_valid_checker(std::string &data){
+	for(size_t i = 0; i < data.length(); i++){
+		if(data[i] == ' '){
+			if( (i > 0) && (i < (data.length() + 1))){
+				if( !is_oper(data[i-1]) && !is_oper(data[i+1])){
+					throw fmt_error("Invalid syntax", i);
+				}
+			}
+		}
 	}
 }
 
