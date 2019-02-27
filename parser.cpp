@@ -30,7 +30,7 @@ std::string calc_prs::parser::solve_input_data(std::string data){
 	}
 }
 
-void calc_prs::parser::dereference_all_vars(std::string& data){
+std::string calc_prs::parser::dereference_all_vars(std::string data){
 	auto mvar = get_variables_borders(data);
 	if(mvar.size() != 0){
 		std::string name;
@@ -52,6 +52,7 @@ void calc_prs::parser::dereference_all_vars(std::string& data){
 			}
 		}
 	}
+	return data;
 }
 
 void calc_prs::parser::process_buf(){
@@ -79,10 +80,10 @@ void calc_prs::parser::process_buf(){
 		hcon = true;
 	}
 	
-	dereference_all_vars(buf);
+	buf = dereference_all_vars(buf);
 	buf = solve_input_data(buf);
 	if(hcon){
-		__namespace[varname] = NUMERIC_FMT_TO_STRING_FUNTION(buf.c_str());
+		__namespace[varname] = NUMERIC_FMT_TO_STRING_FUNCTION(buf.c_str());
 		buf.erase();
 	}
 }
@@ -151,8 +152,8 @@ void calc_prs::parser::prc(std::string &data){
 	std::string b_str, l_str, r_str;
 	while(have_oper(data, oper_list)){
 		auto exp = find_most_priority_exp(data);
-		a = NUMERIC_FMT_TO_STRING_FUNTION(data.substr((exp.second.first==0)?exp.second.first:(exp.second.first + 1), exp.first - exp.second.first).c_str());
-		b = NUMERIC_FMT_TO_STRING_FUNTION(data.substr(exp.first + 1,exp.second.second- exp.first).c_str());
+		a = NUMERIC_FMT_TO_STRING_FUNCTION(data.substr((exp.second.first==0)?exp.second.first:(exp.second.first + 1), exp.first - exp.second.first).c_str());
+		b = NUMERIC_FMT_TO_STRING_FUNCTION(data.substr(exp.first + 1,exp.second.second- exp.first).c_str());
 		#ifdef DEBUG
 		std::cout<<exp.first<< " <"<< exp.second.first <<"," << exp.second.second<<">"<<std::endl;
 		std::cout<<a<<std::endl;

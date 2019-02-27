@@ -16,7 +16,7 @@
 #endif
 
 #define OP_COUNT 4
-#define NUMERIC_FMT_TO_STRING_FUNTION(str) atof(str)
+#define NUMERIC_FMT_TO_STRING_FUNCTION(str) atof(str)
 
 namespace calc_prs{
 	typedef double numeric_fmt;
@@ -46,7 +46,7 @@ namespace calc_prs{
 		koid get_koid(std::string &data);
 		
 		std::string solve_input_data(std::string data);
-		void dereference_all_vars(std::string &data);
+		std::string dereference_all_vars(std::string data);
 		void prc(std::string &data); //process data inside high priority parentheses
 		std::pair<size_t, std::pair<size_t,size_t>> find_most_priority_exp(std::string &data);
 		std::pair<size_t, size_t> find_most_priority_parentheses(std::string &data);
