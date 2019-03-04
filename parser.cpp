@@ -70,26 +70,39 @@ void calc_prs::parser::process_buf(){
 		}
 		return;
 	}
-	
-	auto expr = buf.find('=');
-	bool hcon = false;
-	std::string varname;
-	if(expr != std::string::npos){
-		varname = buf.substr(0, expr);
-		buf = buf.substr(expr + 1, buf.length() - expr);
-		hcon = true;
-	}
-	
-	buf = dereference_all_vars(buf);
-	buf = solve_input_data(buf);
-	if(hcon){
-		__namespace[varname] = NUMERIC_FMT_TO_STRING_FUNCTION(buf.c_str());
-		buf.erase();
+	switch(get_koid(buf)){
+		case EXPRESSION:
+			{
+				auto expr = buf.find('=');
+				bool hcon = false;
+				std::string varname;
+				if(expr != std::string::npos){
+					varname = buf.substr(0, expr);
+					buf = buf.substr(expr + 1, buf.length() - expr);
+					hcon = true;
+				}
+				buf = dereference_all_vars(buf);
+				buf = solve_input_data(buf);
+				if(hcon){
+					__namespace[varname] = NUMERIC_FMT_TO_STRING_FUNCTION(buf.c_str());
+					buf.erase();
+				}
+			}
+			break;
+		case FUNCTION_DEF:
+			break;
+		default:
+			break;
 	}
 }
 
 calc_prs::koid calc_prs::parser::get_koid(std::string &data){
-	/// TO DO
+	/*for( size_t i = 1; i < (data.length() - 1); i++){
+		if( is_name_char(data[i-1]) && (data[i] == '(')){
+			return FUNCTION_DEF;
+		}
+	}*/
+	return EXPRESSION;
 }
 
 std::list<std::pair<size_t, size_t>> calc_prs::parser::get_variables_borders(std::string &data){
@@ -227,6 +240,8 @@ calc_prs::numeric_fmt calc_prs::parser::solve_bi_expression(calc_prs::numeric_fm
 		return f + s;
 		case '-':
 		return f - s;
+		case '^':
+		return pow(f, s);
 	}
 	throw p_excep("ERROR: undefined operator \'" + std::string(&oper, 1) + "\'");
 }
@@ -252,7 +267,7 @@ std::string calc_prs::parser::get_result(){
 
 inline bool calc_prs::parser::__s_check(const char ch){
 	if((ch >= int('0')) && (ch <= int('9'))) return true;
-	if((ch == '/') || (ch == '*') || (ch == '-') || (ch == '+')) return true;
+	if((ch == '/') || (ch == '*') || (ch == '-') || (ch == '+') || (ch == '^')) return true;
 	if( ch == '=') return true;
 	if( ch == '.') return true;
 	if((ch == '(') || (ch == ')')) return true;

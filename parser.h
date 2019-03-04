@@ -9,13 +9,15 @@
 #include <algorithm>
 #include <map>
 #include <list>
+
+#include <math.h>
 #include "parserExceptions.h"
 
 #ifdef DEBUG
 #include <iostream>
 #endif
 
-#define OP_COUNT 4
+#define OP_COUNT 5+1
 #define NUMERIC_FMT_TO_STRING_FUNCTION(str) atof(str)
 
 namespace calc_prs{
@@ -23,7 +25,7 @@ namespace calc_prs{
 	
 	enum koid{                      /*kind of input data       */
 			EXPRESSION,
-			FUNCTION
+			FUNCTION_DEF
 		};
 	
 	class parser{
@@ -57,8 +59,8 @@ namespace calc_prs{
 		std::pair<size_t, size_t> get_var_borders(std::string &data, size_t pos = 0);
 		inline bool is_oper(const char c);
 		inline bool is_name_char(const char c);
-		const char operators[2][2] = {{'*','/'}, {'+','-'}};
-		const char oper_list[4] = {'*','/','+','-'};
+		const char operators[3][2] = {{'^', '\0'}, {'*','/'}, {'+','-'}};
+		const char oper_list[5] = {'^','*','/','+','-'};
 	
 	};
 	
