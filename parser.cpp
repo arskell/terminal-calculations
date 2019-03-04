@@ -70,6 +70,18 @@ void calc_prs::parser::process_buf(){
 		}
 		return;
 	}
+	
+	if(buf == "funcspace"){ 	/* temporary code word to debugging 		*/
+		buf = "\n";
+		for(auto i = __funcspace.begin(); i != __funcspace.end(); i++){
+			buf += i->first + " ::: ";
+			for(auto j = i->second.local_namespace.begin(); j != i->second.local_namespace.end(); j++){
+				buf += j->first + ", ";
+			}
+			buf+= ";\n";
+		}
+		return;
+	}
 	switch(get_koid(buf)){
 		case EXPRESSION:
 			{
@@ -90,18 +102,40 @@ void calc_prs::parser::process_buf(){
 			}
 			break;
 		case FUNCTION_DEF:
+			{
+				auto fd_opr = buf.find(':');
+				std::string fdef = buf.substr(0, fd_opr - 1);
+				function fnc;
+				fnc.expression = buf.substr(fd_opr + 1, buf.length()-fd_opr);
+				auto f_o = fdef.find('(');;
+				auto b = fdef.find(',', f_o + 1);
+				size_t s_o = (b == std::string::npos)?(fdef.length() - 1):(b-1);
+				while(f_o != std::string::npos){
+					f_o++;
+					fnc.local_namespace[fdef.substr(f_o, s_o - f_o + 1)] = 0;
+					fdef = fdef.substr(0, f_o - 1) + fdef.substr(s_o + 1, fdef.length() - s_o);
+					f_o = fdef.find(',');
+					b = fdef.find(',', f_o + 1);
+					s_o = (b == std::string::npos)?(fdef.length()-1):(b-1);
+				}
+				__funcspace[fdef] = fnc;
+				buf.erase();
+			}
 			break;
 		default:
 			break;
 	}
 }
 
+std::string calc_prs::parser::uni_proc(std::string &data){
+	
+}
+
 calc_prs::koid calc_prs::parser::get_koid(std::string &data){
-	/*for( size_t i = 1; i < (data.length() - 1); i++){
-		if( is_name_char(data[i-1]) && (data[i] == '(')){
-			return FUNCTION_DEF;
-		}
-	}*/
+	if(int c = std::count(data.begin(),data.end(), ':')){
+		if(c == 1) return FUNCTION_DEF;
+		if(c > 1) throw fmt_error("unexpected symbol \':\'", data.rfind(':'));
+	}
 	return EXPRESSION;
 }
 
@@ -138,11 +172,11 @@ std::pair<size_t, size_t> calc_prs::parser::get_var_borders(std::string& data, s
 }
 
 inline bool calc_prs::parser::is_name_char(const char c){
-	for(int l = 'a'; l < (int)'z'; l++){
-		if(c == (char)l) return true;
+	if( (c >= 'a') && ( c <= 'z')){
+		return true;
 	}
-	for(int l = 'A'; l < (int)'Z'; l++){
-		if(c == (char)l) return true;
+	if( (c >= 'A') && ( c <= 'Z')){
+		return true;
 	}
 	return false;
 }
@@ -269,6 +303,8 @@ inline bool calc_prs::parser::__s_check(const char ch){
 	if((ch >= int('0')) && (ch <= int('9'))) return true;
 	if((ch == '/') || (ch == '*') || (ch == '-') || (ch == '+') || (ch == '^')) return true;
 	if( ch == '=') return true;
+	if( ch == ':') return true;
+	if( ch == ',') return true;
 	if( ch == '.') return true;
 	if((ch == '(') || (ch == ')')) return true;
 	return is_name_char(ch);

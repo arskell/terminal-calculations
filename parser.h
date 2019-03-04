@@ -17,7 +17,7 @@
 #include <iostream>
 #endif
 
-#define OP_COUNT 5+1
+#define OP_COUNT 5+1 	/* must be an even number    */
 #define NUMERIC_FMT_TO_STRING_FUNCTION(str) atof(str)
 
 namespace calc_prs{
@@ -37,9 +37,15 @@ namespace calc_prs{
 		std::string get_result();
 		void process_buf();
 	private:
+		struct function{
+			std::map<std::string, numeric_fmt> local_namespace;
+			std::string expression;
+		};
+		
 		std::string buf;
 		std::string workspace;
 		std::map<std::string, numeric_fmt> __namespace;
+		std::map<std::string, function> __funcspace;
 		
 		void __validation_checker(std::string &data);
 		void __prevalidation_valid_checker(std::string& data);
@@ -47,6 +53,7 @@ namespace calc_prs{
 		
 		koid get_koid(std::string &data);
 		
+		std::string uni_proc(std::string & data);
 		std::string solve_input_data(std::string data);
 		std::string dereference_all_vars(std::string data);
 		void prc(std::string &data); //process data inside high priority parentheses
@@ -61,7 +68,7 @@ namespace calc_prs{
 		inline bool is_name_char(const char c);
 		const char operators[3][2] = {{'^', '\0'}, {'*','/'}, {'+','-'}};
 		const char oper_list[5] = {'^','*','/','+','-'};
-	
+		
 	};
 	
 }
