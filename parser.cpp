@@ -154,8 +154,8 @@ void calc_prs::parser::__prevalidation_valid_checker(std::string &data){
 	for(size_t i = 0; i < data.length(); i++){
 		if(data[i] == ' '){
 			if( (i > 0) && (i < (data.length() + 1))){
-				if( !is_oper(data[i-1]) && !is_oper(data[i+1])){
-					throw fmt_error("Invalid syntax", i);
+				if(!is_oper(data[i-1]) && !is_oper(data[i+1])){	
+					if( (data[i-1] != '=') && (data[i+1] != '='))throw fmt_error("Invalid syntax", i);
 				}
 			}
 		}
