@@ -125,16 +125,16 @@ void calc_prs::parser::process_buf(){
 				std::string workd;
 				while(high_priority_func_borders.first != std::string::npos){
 					workd = buf.substr(high_priority_func_borders.first, high_priority_func_borders.second - high_priority_func_borders.first);// without last ')'
-					size_t offset = workd.find('(', high_priority_func_borders.first);
+					size_t offset = workd.find('(');
 					std::string function_name = workd.substr(0, offset);
-					std::string var_def = workd.substr(offset + 1, high_priority_func_borders.second - offset - 1);
+					std::string var_def = workd.substr(offset + 1, workd.length() - offset - 1);
 					if(__funcspace.find(function_name) == __funcspace.end()) throw fmt_error("no such function \'" + function_name + "\'", high_priority_func_borders.first);
 					function _fnc = __funcspace[function_name];
 					workd = _fnc.expression;
 					for(auto it = _fnc.local_namespace.begin(); it!=_fnc.local_namespace.end(); it++){
 						size_t __tmp = 0;
 						__tmp = var_def.find(',', __tmp);
-						it->second = NUMERIC_FMT_TO_STRING_FUNCTION(var_def.substr(0, __tmp).c_str());
+						it->second = NUMERIC_FMT_TO_STRING_FUNCTION(solve_input_data(var_def.substr(0, __tmp)).c_str());
 						var_def = var_def.substr(__tmp + 1, var_def.length() - __tmp - 1);
 					}
 					workd = dereference_all_vars(workd, _fnc.local_namespace, false);
@@ -265,16 +265,14 @@ std::pair<size_t, size_t> calc_prs::parser::get_function_borders(std::string& da
 	}
 	std::string buffer = data;
 	size_t op_p = static_cast<size_t>(std::count(data.begin()+cor.first, data.end(), '('));
-	size_t right_index;
+	size_t right_index = cor.second;
 	{
 		if(op_p != 1){
-			size_t prev_index;
 			for(size_t i = 0; i < op_p; i++){ 
-				prev_index = data.find(')', prev_index+1);
+				right_index = data.find(')', right_index+1);
 			}
-			right_index = data.find(')', prev_index+1);
 		}else{
-			right_index = data.find(')');
+			right_index = data.find(')', cor.second);
 		}
 	}
 	return {cor.first, right_index};
