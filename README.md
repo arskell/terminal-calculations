@@ -16,7 +16,7 @@ more lighter program than python.
 
 ## Functions
 
-Terminal-calculations support an one line functions. 
+Terminal-calculations support an one line functions.  
 Syntax: `function_name(argument1[,argument2,...]):[expression]`
 
 ### Example 1: 
