@@ -8,7 +8,11 @@ lighter program than python.
 
 ## Arithmetical operations:
 
-  `<^>`, `<*>`, `</>`, `<+>`, `<->`
+  `^` - power,  
+  
+  `*` - multiply,   `/` - divide,
+  
+  `+` - plus,       `-` - minus
 
 ## Functions
 
