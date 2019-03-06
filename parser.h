@@ -61,7 +61,7 @@ namespace calc_prs{
 		std::string solve_input_data(std::string data);
 		std::string dereference_all_vars(std::string data, std::map<std::string, numeric_fmt> &nmspace, bool excep_throw = true);
 		std::string dereference_all_vars(std::string data, std::vector<std::pair<std::string, numeric_fmt>> &nmspace, bool excep_throw = true);
-		void prc(std::string &data); 									/*process data inside high priority parentheses			*/
+		void prc(std::string &data); 									/*process the data inside high priority parentheses			*/
 		std::pair<size_t, std::pair<size_t,size_t>> find_most_priority_exp(std::string &data);
 		std::pair<size_t, size_t> find_most_priority_parentheses(std::string &data);
 		numeric_fmt solve_bi_expression(numeric_fmt &f, numeric_fmt &s, char oper);

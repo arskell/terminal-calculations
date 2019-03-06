@@ -41,7 +41,9 @@ std::string calc_prs::parser::dereference_all_vars(std::string data,std::map<std
 			if(name.find('(') != std::string::npos) continue;
 			__nat = nmspace.find(name); 
 			if( __nat == nmspace.end()){
-				if(excep_throw) throw p_excep("ERROR: no such variable \'" + data.substr((*i).first, (*i).second - (*i).first + 1) + "\'");
+				if(excep_throw){
+					throw p_excep("ERROR: no such variable \'" + data.substr((*i).first, (*i).second - (*i).first + 1) + "\'");
+				}else{continue;}
 			}
 			tmp =  std::to_string((*__nat).second);
 			data = data.substr(0, (*i).first) +
@@ -67,7 +69,9 @@ std::string calc_prs::parser::dereference_all_vars(std::string data, std::vector
 			if(name.find('(') != std::string::npos) continue;
 			__nat = find(nmspace, name);
 			if( __nat == nmspace.end()){
-				if(excep_throw) throw p_excep("ERROR: no such variable \'" + data.substr((*i).first, (*i).second - (*i).first + 1) + "\'");
+				if(excep_throw){
+					throw p_excep("ERROR: no such variable \'" + data.substr((*i).first, (*i).second - (*i).first + 1) + "\'");
+				}else{continue;}
 			}
 			tmp =  std::to_string((*__nat).second);
 			data = data.substr(0, (*i).first) +
@@ -224,9 +228,11 @@ void calc_prs::parser::__prevalidation_valid_checker(std::string &data){
 }
 
 std::pair<size_t, size_t> calc_prs::parser::get_var_borders(std::string& data, size_t pos){
+	size_t r;
 	for(size_t i = pos; i < data.length(); i++){
 		if(is_name_char(data[i])){
-			return {i, near_operators(data, i, true) - 1};
+			r = near_operators(data, i, true) - 1;
+			return {i, data[r]==')'?r-1:r};
 		}
 	}
 	return {std::string::npos, std::string::npos};
