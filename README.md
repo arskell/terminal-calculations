@@ -1,4 +1,4 @@
-### terminal-calculations
+# terminal-calculations
 A software for arithmetical calculations in terminal.
 
 ## What it can do?
@@ -15,12 +15,12 @@ lighter program than python.
 Terminal-calculations support an one line functions. 
 Syntax: `<function_name(argument1[,argument2,...]):[expression]>`
 
-# Example 1: 
+### Example 1: 
               `< <<< root(x,n):x^(1/n)>`
               `< <<< root(16,2)>`
               `< >>> 4.000000 >`
               
-# Example 2:  
+### Example 2:  
               `< <<< n=4 >`
               `< <<< somefunc(m):n*m >`
               `< <<< somefunc(2) >`
