@@ -36,9 +36,9 @@ In progress
 
 ## Temporary code words
 
-	Some code words for debugging. In the future they will become the Procedures.
+Some code words for debugging. In the future they will become the Procedures.
 	
-	`namespace` - show all global vars
-	`funcspace` - show all functions
-	`q` - for exit (do not use the `q` char like the first letter in a vars/functions names)
+`namespace` - show all global vars  
+`funcspace` - show all functions  
+`q` - for exit (do not use the `q` char like the first letter in a vars/functions names)  
 
