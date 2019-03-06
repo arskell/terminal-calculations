@@ -30,17 +30,44 @@ std::string calc_prs::parser::solve_input_data(std::string data){
 	}
 }
 
-std::string calc_prs::parser::dereference_all_vars(std::string data){
+std::string calc_prs::parser::dereference_all_vars(std::string data,std::map<std::string, numeric_fmt> &nmspace, bool excep_throw){
 	auto mvar = get_variables_borders(data);
 	if(mvar.size() != 0){
 		std::string name;
 		std::string tmp;
 		std::map<std::string, numeric_fmt>::iterator __nat;
 		for(auto i = mvar.begin(); i != mvar.end(); i++){
-			name = data.substr((*i).first, (*i).second - (*i).first + 1);
-			__nat = __namespace.find(name); 
-			if( __nat == __namespace.end()){
-				throw p_excep("ERROR: no such variable \'" + data.substr((*i).first, (*i).second - (*i).first + 1) + "\'");
+			name = data.substr(i->first, i->second - i->first + 1);
+			if(name.find('(') != std::string::npos) continue;
+			__nat = nmspace.find(name); 
+			if( __nat == nmspace.end()){
+				if(excep_throw) throw p_excep("ERROR: no such variable \'" + data.substr((*i).first, (*i).second - (*i).first + 1) + "\'");
+			}
+			tmp =  std::to_string((*__nat).second);
+			data = data.substr(0, (*i).first) +
+					 tmp + 
+					 ( ((*i).second==(data.length()))?(""):data.substr((*i).second + 1, data.length() - (*i).first));
+			for(auto j = i; j!= mvar.end(); j++){
+				j->first = j->first + (tmp.length() - name.length());
+				j->second = j->second + (tmp.length() - name.length());
+			}
+		}
+	}
+	return data;
+}
+
+std::string calc_prs::parser::dereference_all_vars(std::string data, std::vector<std::pair<std::string, numeric_fmt>> &nmspace, bool excep_throw){
+	auto mvar = get_variables_borders(data);
+	if(mvar.size() != 0){
+		std::string name;
+		std::string tmp;
+		std::vector<std::pair<std::string, numeric_fmt>>::iterator __nat;
+		for(auto i = mvar.begin(); i != mvar.end(); i++){
+			name = data.substr(i->first, i->second - i->first + 1);
+			if(name.find('(') != std::string::npos) continue;
+			__nat = find(nmspace, name);
+			if( __nat == nmspace.end()){
+				if(excep_throw) throw p_excep("ERROR: no such variable \'" + data.substr((*i).first, (*i).second - (*i).first + 1) + "\'");
 			}
 			tmp =  std::to_string((*__nat).second);
 			data = data.substr(0, (*i).first) +
@@ -93,7 +120,30 @@ void calc_prs::parser::process_buf(){
 					buf = buf.substr(expr + 1, buf.length() - expr);
 					hcon = true;
 				}
-				buf = dereference_all_vars(buf);
+				buf = dereference_all_vars(buf, __namespace);
+				auto high_priority_func_borders = get_function_borders(buf); 
+				std::string workd;
+				while(high_priority_func_borders.first != std::string::npos){
+					workd = buf.substr(high_priority_func_borders.first, high_priority_func_borders.second - high_priority_func_borders.first);// without last ')'
+					size_t offset = workd.find('(', high_priority_func_borders.first);
+					std::string function_name = workd.substr(0, offset);
+					std::string var_def = workd.substr(offset + 1, high_priority_func_borders.second - offset - 1);
+					if(__funcspace.find(function_name) == __funcspace.end()) throw fmt_error("no such function \'" + function_name + "\'", high_priority_func_borders.first);
+					function _fnc = __funcspace[function_name];
+					workd = _fnc.expression;
+					for(auto it = _fnc.local_namespace.begin(); it!=_fnc.local_namespace.end(); it++){
+						size_t __tmp = 0;
+						__tmp = var_def.find(',', __tmp);
+						it->second = NUMERIC_FMT_TO_STRING_FUNCTION(var_def.substr(0, __tmp).c_str());
+						var_def = var_def.substr(__tmp + 1, var_def.length() - __tmp - 1);
+					}
+					workd = dereference_all_vars(workd, _fnc.local_namespace, false);
+					workd = dereference_all_vars(workd, __namespace);
+					workd = solve_input_data(workd);
+					buf = buf.substr(0, high_priority_func_borders.first) + workd + buf.substr(high_priority_func_borders.second +1,
+																								buf.length() - high_priority_func_borders.second - 1);
+					high_priority_func_borders = get_function_borders(buf);
+				}
 				buf = solve_input_data(buf);
 				if(hcon){
 					__namespace[varname] = NUMERIC_FMT_TO_STRING_FUNCTION(buf.c_str());
@@ -112,7 +162,10 @@ void calc_prs::parser::process_buf(){
 				size_t s_o = (b == std::string::npos)?(fdef.length() - 1):(b-1);
 				while(f_o != std::string::npos){
 					f_o++;
-					fnc.local_namespace[fdef.substr(f_o, s_o - f_o + 1)] = 0;
+					std::string var_name = fdef.substr(f_o, s_o - f_o + 1);
+					if(!is_name_char(var_name[0])) throw fmt_error("unexpected symbol at arguments", f_o);
+					//fnc.local_namespace[var_name] = 0;
+					fnc.local_namespace.insert(fnc.local_namespace.end(), std::pair<std::string, numeric_fmt>(var_name, 0));
 					fdef = fdef.substr(0, f_o - 1) + fdef.substr(s_o + 1, fdef.length() - s_o);
 					f_o = fdef.find(',');
 					b = fdef.find(',', f_o + 1);
@@ -129,6 +182,14 @@ void calc_prs::parser::process_buf(){
 
 std::string calc_prs::parser::uni_proc(std::string &data){
 	
+}
+
+std::vector<std::pair<std::string, calc_prs::numeric_fmt>>::iterator
+calc_prs::parser::find(std::vector<std::pair<std::string, numeric_fmt>>& vctr, std::string& word){
+	for(auto it = vctr.begin(); it != vctr.end(); it++){
+		if(it->first == word) return it;
+	}
+	return vctr.end();
 }
 
 calc_prs::koid calc_prs::parser::get_koid(std::string &data){
@@ -192,6 +253,44 @@ std::pair<size_t, size_t> calc_prs::parser::find_most_priority_parentheses(std::
 		throw fmt_error("Parenthesis is missing", (cl==std::string::npos)?data.length():0);
 	}
 	return {op, cl};
+}
+
+std::pair<size_t, size_t> calc_prs::parser::get_function_borders(std::string& data){
+	std::pair<size_t, size_t> prev = get_char_word(data, 0);
+	std::pair<size_t, size_t> cor;
+	if(prev.first == std::string::npos) return {std::string::npos, std::string::npos};
+	while(prev.first!=std::string::npos){
+		cor = prev;
+		prev = get_char_word(data, cor.second + 1);
+	}
+	std::string buffer = data;
+	size_t op_p = static_cast<size_t>(std::count(data.begin()+cor.first, data.end(), '('));
+	size_t right_index;
+	{
+		if(op_p != 1){
+			size_t prev_index;
+			for(size_t i = 0; i < op_p; i++){ 
+				prev_index = data.find(')', prev_index+1);
+			}
+			right_index = data.find(')', prev_index+1);
+		}else{
+			right_index = data.find(')');
+		}
+	}
+	return {cor.first, right_index};
+}
+
+std::pair<size_t, size_t> calc_prs::parser::get_char_word(std::string &data, size_t pos){
+	size_t r = 0;
+	for(size_t i = pos; i < data.length(); i++){
+		if( is_name_char(data[i])){
+			r = i;
+			r++;
+			while(is_name_char(data[r])){ r++;}
+			return {i, r - 1};
+		}
+	}
+	return {std::string::npos, std::string::npos};
 }
 
 void calc_prs::parser::prc(std::string &data){

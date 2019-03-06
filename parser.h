@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 #include <algorithm>
+#include <vector>
 #include <map>
 #include <list>
 
@@ -38,7 +39,7 @@ namespace calc_prs{
 		void process_buf();
 	private:
 		struct function{
-			std::map<std::string, numeric_fmt> local_namespace;
+			std::vector<std::pair<std::string, numeric_fmt>> local_namespace;
 			std::string expression;
 		};
 		
@@ -51,12 +52,16 @@ namespace calc_prs{
 		void __prevalidation_valid_checker(std::string& data);
 		inline bool __s_check(const char c);
 		
-		koid get_koid(std::string &data);
+		std::vector<std::pair<std::string, numeric_fmt>>::iterator find(std::vector<std::pair<std::string, numeric_fmt>>& vctr, std::string& wrd);
 		
+		koid get_koid(std::string &data);
+		std::pair<size_t, size_t> get_function_borders(std::string&data);   /* need to call after calling the 'dereference_all_vars' ! 	*/
+		std::pair<size_t, size_t> get_char_word(std::string &data, size_t pos);
 		std::string uni_proc(std::string & data);
 		std::string solve_input_data(std::string data);
-		std::string dereference_all_vars(std::string data);
-		void prc(std::string &data); //process data inside high priority parentheses
+		std::string dereference_all_vars(std::string data, std::map<std::string, numeric_fmt> &nmspace, bool excep_throw = true);
+		std::string dereference_all_vars(std::string data, std::vector<std::pair<std::string, numeric_fmt>> &nmspace, bool excep_throw = true);
+		void prc(std::string &data); 									/*process data inside high priority parentheses			*/
 		std::pair<size_t, std::pair<size_t,size_t>> find_most_priority_exp(std::string &data);
 		std::pair<size_t, size_t> find_most_priority_parentheses(std::string &data);
 		numeric_fmt solve_bi_expression(numeric_fmt &f, numeric_fmt &s, char oper);
