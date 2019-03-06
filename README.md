@@ -1,5 +1,5 @@
 # terminal-calculations
-A software for arithmetical calculations in terminal.
+The software for arithmetical calculations in terminal.
 
 ## What it can do?
 
@@ -33,3 +33,12 @@ Syntax: `function_name(argument1[,argument2,...]):[expression]`
 ## Procedures
 
 In progress
+
+## Temporary code words
+
+	Some code words for debugging. In the future they will become the Procedures.
+	
+	`namespace` - show all global vars
+	`funcspace` - show all functions
+	`q` - for exit (do not use the `q` char like the first letter in a vars/functions names)
+

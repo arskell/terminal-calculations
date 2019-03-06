@@ -57,7 +57,6 @@ namespace calc_prs{
 		koid get_koid(std::string &data);
 		std::pair<size_t, size_t> get_function_borders(std::string&data);   /* need to call after calling the 'dereference_all_vars' ! 	*/
 		std::pair<size_t, size_t> get_char_word(std::string &data, size_t pos);
-		std::string uni_proc(std::string & data);
 		std::string solve_input_data(std::string data);
 		std::string dereference_all_vars(std::string data, std::map<std::string, numeric_fmt> &nmspace, bool excep_throw = true);
 		std::string dereference_all_vars(std::string data, std::vector<std::pair<std::string, numeric_fmt>> &nmspace, bool excep_throw = true);

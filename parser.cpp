@@ -184,10 +184,6 @@ void calc_prs::parser::process_buf(){
 	}
 }
 
-std::string calc_prs::parser::uni_proc(std::string &data){
-	
-}
-
 std::vector<std::pair<std::string, calc_prs::numeric_fmt>>::iterator
 calc_prs::parser::find(std::vector<std::pair<std::string, numeric_fmt>>& vctr, std::string& word){
 	for(auto it = vctr.begin(); it != vctr.end(); it++){
@@ -228,12 +224,18 @@ void calc_prs::parser::__prevalidation_valid_checker(std::string &data){
 }
 
 std::pair<size_t, size_t> calc_prs::parser::get_var_borders(std::string& data, size_t pos){
-	size_t r;
+	/*size_t r;
 	for(size_t i = pos; i < data.length(); i++){
 		if(is_name_char(data[i])){
 			r = near_operators(data, i, true) - 1;
 			return {i, data[r]==')'?r-1:r};
 		}
+	}*/
+	auto candidate = get_char_word(data, pos);
+	//size_t i = candidate.second;
+	while(candidate.second != std::string::npos){
+		if(data[candidate.second+1] != '(') return candidate;
+		candidate = get_char_word(data, candidate.second+1);
 	}
 	return {std::string::npos, std::string::npos};
 }
