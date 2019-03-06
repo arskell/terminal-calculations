@@ -17,7 +17,7 @@ more lighter program than python.
 ## Functions
 
 Terminal-calculations support an one line functions. 
-Syntax: `<function_name(argument1[,argument2,...]):[expression]>`
+Syntax: `function_name(argument1[,argument2,...]):[expression]`
 
 ### Example 1: 
               <<< root(x,n):x^(1/n)
