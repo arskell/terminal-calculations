@@ -4,7 +4,7 @@ A software for arithmetical calculations in terminal.
 ## What it can do?
 
 This software can do some arithmetic calculations in your terminal! Yes, it's like a python shell, but 'terminal-calculations' is
-lighter program than python.
+more lighter program than python.
 
 ## Arithmetical operations:
 
