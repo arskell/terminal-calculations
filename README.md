@@ -40,5 +40,5 @@ Some code words for debugging. In the future they will become the Procedures.
 	
 `namespace` - show all global vars  
 `funcspace` - show all functions  
-`q` - for exit (do not use the `q` char like the first letter in a vars/functions names)  
+`q` - for exit (do not use the `q` char as the first letter in a vars/functions names)  
 
