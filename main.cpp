@@ -33,7 +33,7 @@ int main(int argc, char** argv){
 			error_proc(exc, prs);
 			error = true;
 		}
-		if(!error) std::cout<<">>> "<<prs.get_result()<<std::endl;
+		if(!error && (prs.length()>0)) std::cout<<">>> "<<prs.get_result()<<std::endl;
 		prs.erase_buf();
 		inp.erase();
 	}

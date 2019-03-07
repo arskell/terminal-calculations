@@ -168,7 +168,6 @@ void calc_prs::parser::process_buf(){
 					f_o++;
 					std::string var_name = fdef.substr(f_o, s_o - f_o + 1);
 					if(!is_name_char(var_name[0])) throw fmt_error("unexpected symbol at arguments", f_o);
-					//fnc.local_namespace[var_name] = 0;
 					fnc.local_namespace.insert(fnc.local_namespace.end(), std::pair<std::string, numeric_fmt>(var_name, 0));
 					fdef = fdef.substr(0, f_o - 1) + fdef.substr(s_o + 1, fdef.length() - s_o);
 					f_o = fdef.find(',');
@@ -200,6 +199,10 @@ calc_prs::koid calc_prs::parser::get_koid(std::string &data){
 	return EXPRESSION;
 }
 
+size_t calc_prs::parser::length(){
+	return buf.length();
+}
+
 std::list<std::pair<size_t, size_t>> calc_prs::parser::get_variables_borders(std::string &data){
 	std::list<std::pair<size_t, size_t>> lst;
 	std::pair<size_t, size_t> b;
@@ -224,15 +227,7 @@ void calc_prs::parser::__prevalidation_valid_checker(std::string &data){
 }
 
 std::pair<size_t, size_t> calc_prs::parser::get_var_borders(std::string& data, size_t pos){
-	/*size_t r;
-	for(size_t i = pos; i < data.length(); i++){
-		if(is_name_char(data[i])){
-			r = near_operators(data, i, true) - 1;
-			return {i, data[r]==')'?r-1:r};
-		}
-	}*/
 	auto candidate = get_char_word(data, pos);
-	//size_t i = candidate.second;
 	while(candidate.second != std::string::npos){
 		if(data[candidate.second+1] != '(') return candidate;
 		candidate = get_char_word(data, candidate.second+1);

@@ -37,6 +37,7 @@ namespace calc_prs{
 		void erase_buf();
 		std::string get_result();
 		void process_buf();
+		size_t length();
 	private:
 		struct function{
 			std::vector<std::pair<std::string, numeric_fmt>> local_namespace;
@@ -53,7 +54,6 @@ namespace calc_prs{
 		inline bool __s_check(const char c);
 		
 		std::vector<std::pair<std::string, numeric_fmt>>::iterator find(std::vector<std::pair<std::string, numeric_fmt>>& vctr, std::string& wrd);
-		
 		koid get_koid(std::string &data);
 		std::pair<size_t, size_t> get_function_borders(std::string&data);   /* need to call after calling the 'dereference_all_vars' ! 	*/
 		std::pair<size_t, size_t> get_char_word(std::string &data, size_t pos);
