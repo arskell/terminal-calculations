@@ -16,7 +16,7 @@ more lighter program than python.
 
 ## Functions
 
-Terminal-calculations support an one line functions. 
+Terminal-calculations support an one line functions.  
 Syntax: `function_name(argument1[,argument2,...]):[expression]`
 
 ### Example 1: 
@@ -36,9 +36,9 @@ In progress
 
 ## Temporary code words
 
-	Some code words for debugging. In the future they will become the Procedures.
+Some code words for debugging. In the future they will become the Procedures.
 	
-	`namespace` - show all global vars
-	`funcspace` - show all functions
-	`q` - for exit (do not use the `q` char like the first letter in a vars/functions names)
+`namespace` - show all global vars  
+`funcspace` - show all functions  
+`q` - for exit (do not use the `q` char as the first letter in a vars/functions names)  
 
