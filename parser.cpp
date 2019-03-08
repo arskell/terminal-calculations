@@ -242,6 +242,7 @@ inline bool calc_prs::parser::is_name_char(const char c){
 	if( (c >= 'A') && ( c <= 'Z')){
 		return true;
 	}
+	if( c == '_') return true;
 	return false;
 }
 
