@@ -1,13 +1,10 @@
 #include"parser.h"
 
-calc_prs::numeric_fmt test_sin(std::list<calc_prs::numeric_fmt> ar){
-  return sin(ar.front());
-}
-
 calc_prs::parser::parser(){
-  calc_prs::hrdfnc h;
-  h.func = &test_sin;
-  __default_functions["sin"] = h; 
+   __default_functions["sin"] = hrdfnc(&(user_functions::u_sin));
+   __default_functions["cos"] = hrdfnc(&(user_functions::u_cos));
+   __default_functions["tg"] = hrdfnc(&(user_functions::u_tg));
+   __default_functions["ctg"] = hrdfnc(&(user_functions::u_ctg));
 }
 
 calc_prs::parser::~parser(){
@@ -169,7 +166,7 @@ void calc_prs::parser::process_buf(){
 					     }
 					  }
 					  if(is_hrdfnc){
-					    workd = std::to_string(_hrdfnc_iter->second.func(hrdfnc_arguments));
+					    workd = std::to_string(_hrdfnc_iter->second.func(&hrdfnc_arguments));
 					  }else{
 					    workd = dereference_all_vars(workd, _fnc.local_namespace, false);
 					    workd = dereference_all_vars(workd, __namespace);
@@ -213,7 +210,7 @@ void calc_prs::parser::process_buf(){
 	}
 }
 
-std::vector<std::pair<std::string, calc_prs::numeric_fmt>>::iterator
+std::vector<std::pair<std::string, numeric_fmt>>::iterator
 calc_prs::parser::find(std::vector<std::pair<std::string, numeric_fmt>>& vctr, std::string& word){
 	for(auto it = vctr.begin(); it != vctr.end(); it++){
 		if(it->first == word) return it;
@@ -395,7 +392,7 @@ size_t calc_prs::parser::near_operators(std::string &data, size_t mpos, bool for
 	return forward?data.length():0;
 }
 
-calc_prs::numeric_fmt calc_prs::parser::solve_bi_expression(calc_prs::numeric_fmt& f, calc_prs::numeric_fmt& s, char oper){
+numeric_fmt calc_prs::parser::solve_bi_expression(numeric_fmt& f, numeric_fmt& s, char oper){
 	switch (oper){
 		case '*':
 		return f * s;

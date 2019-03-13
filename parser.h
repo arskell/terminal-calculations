@@ -3,7 +3,6 @@
 
 #define PARSER_H
 
-
 #include <string>
 #include <utility>
 #include <algorithm>
@@ -12,7 +11,11 @@
 #include <list>
 
 #include <math.h>
+
 #include "parserExceptions.h"
+#include "fmt_def.h"
+
+#include "user_functions/functions.hpp"
 
 #ifdef DEBUG
 #include <iostream>
@@ -22,7 +25,6 @@
 #define NUMERIC_FMT_TO_STRING_FUNCTION(str) atof(str)
 
 namespace calc_prs{
-	typedef double numeric_fmt;
 	
 	enum koid{                      /*kind of input data       */
 			EXPRESSION,
@@ -30,8 +32,11 @@ namespace calc_prs{
 		};
 
         struct hrdfnc{
-	    numeric_fmt(*func)(std::list<numeric_fmt>);
-	     };
+	  hrdfnc(numeric_fmt(*fnc)(std::list<numeric_fmt>*) = NULL){
+	    func = fnc;
+	  }
+	   numeric_fmt(*func)(std::list<numeric_fmt>*);
+	};
   
 	class parser{
 	public:
@@ -57,8 +62,6 @@ namespace calc_prs{
 		void __validation_checker(std::string &data);
 		void __prevalidation_valid_checker(std::string& data);
 		inline bool __s_check(const char c);
-	  //std::vector<std::string> split_to_arguments(std::string data);
-	  //std::string deref_hrdfcn(std::string data, std::map<std::string, hrdfnc> &nmspace);
 		std::vector<std::pair<std::string, numeric_fmt>>::iterator find(std::vector<std::pair<std::string, numeric_fmt>>& vctr, std::string& wrd);
 		koid get_koid(std::string &data);
 		std::pair<size_t, size_t> get_function_borders(std::string&data);   /* need to call after calling the 'dereference_all_vars' ! 	*/
