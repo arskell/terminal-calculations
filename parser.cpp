@@ -1,6 +1,13 @@
 #include"parser.h"
 
+calc_prs::numeric_fmt test_sin(std::list<calc_prs::numeric_fmt> ar){
+  return sin(ar.front());
+}
+
 calc_prs::parser::parser(){
+  calc_prs::hrdfnc h;
+  h.func = &test_sin;
+  __default_functions["sin"] = h; 
 }
 
 calc_prs::parser::~parser(){
@@ -59,7 +66,7 @@ std::string calc_prs::parser::dereference_all_vars(std::string data,std::map<std
 }
 
 std::string calc_prs::parser::dereference_all_vars(std::string data, std::vector<std::pair<std::string, numeric_fmt>> &nmspace, bool excep_throw){
-	auto mvar = get_variables_borders(data);
+      	auto mvar = get_variables_borders(data);
 	if(mvar.size() != 0){
 		std::string name;
 		std::string tmp;
@@ -87,7 +94,7 @@ std::string calc_prs::parser::dereference_all_vars(std::string data, std::vector
 }
 
 void calc_prs::parser::process_buf(){
-	__prevalidation_valid_checker(buf);
+        __prevalidation_valid_checker(buf);
 	for(size_t i = 0; i < buf.length(); i++){
 		if(buf[i] == ' '){
 			buf = buf.substr(0, i) + buf.substr(i + 1, buf.length() - i);
@@ -99,7 +106,7 @@ void calc_prs::parser::process_buf(){
 		for(auto i = __namespace.begin(); i != __namespace.end(); i++){
 			buf += i->first + " == " + std::to_string(i->second) + "\n";
 		}
-		return;
+		return; 
 	}
 	
 	if(buf == "funcspace"){ 	/* temporary code word to debugging 		*/
@@ -116,7 +123,7 @@ void calc_prs::parser::process_buf(){
 	switch(get_koid(buf)){
 		case EXPRESSION:
 			{
-				auto expr = buf.find('=');
+			 	auto expr = buf.find('=');
 				bool hcon = false;
 				std::string varname;
 				if(expr != std::string::npos){
@@ -127,32 +134,55 @@ void calc_prs::parser::process_buf(){
 				buf = dereference_all_vars(buf, __namespace);
 				auto high_priority_func_borders = get_function_borders(buf); 
 				std::string workd;
+				bool is_hrdfnc;
 				while(high_priority_func_borders.first != std::string::npos){
 					workd = buf.substr(high_priority_func_borders.first, high_priority_func_borders.second - high_priority_func_borders.first);// without last ')'
 					size_t offset = workd.find('(');
 					std::string function_name = workd.substr(0, offset);
 					std::string var_def = workd.substr(offset + 1, workd.length() - offset - 1);
-					if(__funcspace.find(function_name) == __funcspace.end()) throw fmt_error("no such function \'" + function_name + "\'", high_priority_func_borders.first);
-					function _fnc = __funcspace[function_name];
-					workd = _fnc.expression;
-					for(auto it = _fnc.local_namespace.begin(); it!=_fnc.local_namespace.end(); it++){
-						size_t __tmp = 0;
-						__tmp = var_def.find(',', __tmp);
-						it->second = NUMERIC_FMT_TO_STRING_FUNCTION(solve_input_data(var_def.substr(0, __tmp)).c_str());
-						var_def = var_def.substr(__tmp + 1, var_def.length() - __tmp - 1);
-					}
-					workd = dereference_all_vars(workd, _fnc.local_namespace, false);
-					workd = dereference_all_vars(workd, __namespace);
-					workd = solve_input_data(workd);
-					buf = buf.substr(0, high_priority_func_borders.first) + workd + buf.substr(high_priority_func_borders.second +1,
-																								buf.length() - high_priority_func_borders.second - 1);
+					function _fnc;
+					std::list<numeric_fmt> hrdfnc_arguments;
+					auto _hrdfnc_iter = __default_functions.find(function_name);
+					if(_hrdfnc_iter != __default_functions.end()){
+					  is_hrdfnc = true;
+					   
+					}else{
+					 is_hrdfnc = false;
+					  if(__funcspace.find(function_name) == __funcspace.end()) throw fmt_error("no such function \'" + function_name + "\'", high_priority_func_borders.first);
+					  _fnc = __funcspace[function_name];
+					  }
+					  if(!is_hrdfnc){
+					   workd = _fnc.expression;
+					   for(auto it = _fnc.local_namespace.begin(); it!=_fnc.local_namespace.end(); it++){
+					     size_t __tmp = 0;
+					     __tmp  = var_def.find(',', __tmp);
+					     it->second = NUMERIC_FMT_TO_STRING_FUNCTION(solve_input_data(var_def.substr(0, __tmp)).c_str());
+					     var_def = var_def.substr(__tmp + 1, var_def.length() - __tmp - 1);
+					   }
+					  
+					  }else{
+					    for(int  i = 0; i < std::count(var_def.begin(), var_def.end(), ',')+1; i++){
+					      size_t __tmp = 0;
+					      __tmp  = var_def.find(',', __tmp);
+					      hrdfnc_arguments.push_back(NUMERIC_FMT_TO_STRING_FUNCTION(solve_input_data(var_def.substr(0, __tmp)).c_str()));
+					     var_def = var_def.substr(__tmp + 1, var_def.length() - __tmp - 1);
+					     }
+					  }
+					  if(is_hrdfnc){
+					    workd = std::to_string(_hrdfnc_iter->second.func(hrdfnc_arguments));
+					  }else{
+					    workd = dereference_all_vars(workd, _fnc.local_namespace, false);
+					    workd = dereference_all_vars(workd, __namespace);
+					    workd = solve_input_data(workd);
+					      }
+					buf = buf.substr(0, high_priority_func_borders.first) + workd + buf.substr(high_priority_func_borders.second +1,																				buf.length() - high_priority_func_borders.second - 1);
 					high_priority_func_borders = get_function_borders(buf);
 				}
 				buf = solve_input_data(buf);
 				if(hcon){
 					__namespace[varname] = NUMERIC_FMT_TO_STRING_FUNCTION(buf.c_str());
 					buf.erase();
-				}
+					}
 			}
 			break;
 		case FUNCTION_DEF:

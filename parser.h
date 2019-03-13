@@ -28,7 +28,11 @@ namespace calc_prs{
 			EXPRESSION,
 			FUNCTION_DEF
 		};
-	
+
+        struct hrdfnc{
+	    numeric_fmt(*func)(std::list<numeric_fmt>);
+	     };
+  
 	class parser{
 	public:
 		parser();
@@ -43,16 +47,18 @@ namespace calc_prs{
 			std::vector<std::pair<std::string, numeric_fmt>> local_namespace;
 			std::string expression;
 		};
-		
+	    
 		std::string buf;
 		std::string workspace;
+	  std::map<std::string, hrdfnc> __default_functions;
 		std::map<std::string, numeric_fmt> __namespace;
 		std::map<std::string, function> __funcspace;
 		
 		void __validation_checker(std::string &data);
 		void __prevalidation_valid_checker(std::string& data);
 		inline bool __s_check(const char c);
-		
+	  //std::vector<std::string> split_to_arguments(std::string data);
+	  //std::string deref_hrdfcn(std::string data, std::map<std::string, hrdfnc> &nmspace);
 		std::vector<std::pair<std::string, numeric_fmt>>::iterator find(std::vector<std::pair<std::string, numeric_fmt>>& vctr, std::string& wrd);
 		koid get_koid(std::string &data);
 		std::pair<size_t, size_t> get_function_borders(std::string&data);   /* need to call after calling the 'dereference_all_vars' ! 	*/
