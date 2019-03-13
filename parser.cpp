@@ -387,7 +387,14 @@ inline bool calc_prs::parser::is_oper(const char c){
 
 size_t calc_prs::parser::near_operators(std::string &data, size_t mpos, bool forward){
 	for(size_t i = mpos; i != (forward?data.length():0); i+=(forward?1:(-1))){
-		if(is_oper(data[i])) return i;
+	  if(is_oper(data[i])){
+	    if(i!= data.length() && forward){
+		if(data[i+1]=='-') i++;
+	    }else if(i!=0 && !forward){
+	       if(data[i]=='-' && is_oper(data[i-1])) i--;
+	    }
+	    return i;
+	  }
 	}
 	return forward?data.length():0;
 }
