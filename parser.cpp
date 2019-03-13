@@ -138,7 +138,7 @@ void calc_prs::parser::process_buf(){
 					std::string function_name = workd.substr(0, offset);
 					std::string var_def = workd.substr(offset + 1, workd.length() - offset - 1);
 					function _fnc;
-					std::list<numeric_fmt> hrdfnc_arguments;
+					std::vector<numeric_fmt> hrdfnc_arguments;
 					auto _hrdfnc_iter = __default_functions.find(function_name);
 					if(_hrdfnc_iter != __default_functions.end()){
 					  is_hrdfnc = true;

@@ -3,10 +3,10 @@
 #define FUNCTIONS
 
 #include <math.h>
-#include <list>
+#include <vector>
 #include "../fmt_def.h"
 
-#define ARGS std::list<numeric_fmt>
+#define ARGS std::vector<numeric_fmt>
 
 namespace user_functions{
   numeric_fmt u_sin(ARGS *a);

@@ -32,10 +32,10 @@ namespace calc_prs{
 		};
 
         struct hrdfnc{
-	  hrdfnc(numeric_fmt(*fnc)(std::list<numeric_fmt>*) = NULL){
+	  hrdfnc(numeric_fmt(*fnc)(std::vector<numeric_fmt>*) = NULL){
 	    func = fnc;
 	  }
-	   numeric_fmt(*func)(std::list<numeric_fmt>*);
+	   numeric_fmt(*func)(std::vector<numeric_fmt>*);
 	};
   
 	class parser{
